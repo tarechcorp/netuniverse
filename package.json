@@ -1,5 +1,5 @@
 {
-  "name": "netuniverse",
+  "name": "@samoramachel/netuniverse",
   "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.umd.js",
@@ -42,5 +42,23 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "three": "^0.182.0"
-  }
+  },
+  "description": "Immersive, high-performance 3D graph visualization library for React. It transforms standard relational data into a cinematic \"network universe\" experience using Three.js and React Three Fiber.",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SamoraMachel/netuniverse.git"
+  },
+  "keywords": [
+    "3D",
+    "React"
+  ],
+  "author": "Samora Machel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SamoraMachel/netuniverse/issues"
+  },
+  "homepage": "https://github.com/SamoraMachel/netuniverse#readme"
 }

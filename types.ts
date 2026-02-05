@@ -35,12 +35,17 @@ export interface NodeData {
 export interface LinkData {
   source: string | NodeData;
   target: string | NodeData;
-  value: number;
 }
 
 export interface GraphData {
   nodes: NodeData[];
   links: LinkData[];
+}
+
+export interface GraphRef {
+  camera: THREE.PerspectiveCamera;
+  flyTo: (position: [number, number, number], duration?: number) => void;
+  lookAt: (target: [number, number, number], duration?: number) => void;
 }
 
 // For rendering lines efficiently

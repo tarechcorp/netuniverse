@@ -15,7 +15,8 @@
       "grab_line": "#012056",
       "network_node": "#BDC3C7",
       "network_line": "#BDC3C7",
-      "click_active": "#E47600"
+      "click_active": "#E47600",
+      "background": "#FFFBF4"
     }
   },
   "animation": {
@@ -36,7 +37,7 @@
     }
   },
   "controls": {
-    "enableZoom": false,
+    "enableZoom": true,
     "enablePan": false,
     "enableRotate": true,
     "minPolarAngle": 0,

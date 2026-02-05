@@ -1,27 +1,83 @@
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import * as THREE from 'three';
+import gsap from 'gsap';
 import { GalaxyGraph } from './components/GalaxyGraph';
-import { GraphData, NodeData } from './types';
+import { GraphData, NodeData, GraphRef } from './types';
 import { INITIAL_CAMERA_POSITION } from './constants';
 import config from './data/config.json';
 
-interface GraphSceneProps {
+
+
+export interface GraphSceneProps {
     data: GraphData;
-    onNodeSelect: (node: NodeData | null) => void;
-    selectedNodeId: string | null;
+    onNodeSelect?: (node: NodeData | null) => void;
+    selectedNodeId?: string | null;
+    children?: React.ReactNode;
+    className?: string;
+    style?: React.CSSProperties;
 }
 
-export const GraphScene: React.FC<GraphSceneProps> = ({ data, onNodeSelect, selectedNodeId }) => {
-    return (
-        <div className="w-full h-screen bg-transparent">
-            <Canvas dpr={[1, 2]}>
-                <PerspectiveCamera makeDefault position={INITIAL_CAMERA_POSITION as any} fov={60} near={0.1} far={2000} />
+export const GraphScene = React.forwardRef<GraphRef, GraphSceneProps>(({
+    data,
+    onNodeSelect = () => { },
+    selectedNodeId = null,
+    children,
+    className,
+    style
+}, ref) => {
+    const controlsRef = React.useRef<any>(null);
+    const cameraRef = React.useRef<THREE.PerspectiveCamera>(null);
 
-                <fog attach="fog" args={['#F8F4F1', 400, 1600]} />
+    React.useImperativeHandle(ref, () => ({
+        camera: cameraRef.current!,
+        flyTo: (position: [number, number, number], duration = 1.5) => {
+            if (!cameraRef.current || !controlsRef.current) return;
+
+            // Animate camera position
+            gsap.to(cameraRef.current.position, {
+                x: position[0],
+                y: position[1],
+                z: position[2],
+                duration: duration,
+                ease: "power2.inOut",
+                onUpdate: () => controlsRef.current.update()
+            });
+        },
+        lookAt: (target: [number, number, number], duration = 1.5) => {
+            if (!controlsRef.current) return;
+
+            // Animate controls target
+            gsap.to(controlsRef.current.target, {
+                x: target[0],
+                y: target[1],
+                z: target[2],
+                duration: duration,
+                ease: "power2.inOut",
+                onUpdate: () => controlsRef.current.update()
+            });
+        }
+    }));
+
+    return (
+        <div className={`w-full h-full bg-transparent ${className || ''}`} style={style}>
+            <Canvas dpr={[1, 2]}>
+                <PerspectiveCamera
+                    ref={cameraRef}
+                    makeDefault
+                    position={INITIAL_CAMERA_POSITION as any}
+                    fov={60}
+                    near={0.1}
+                    far={2000}
+                />
+
+                <color attach="background" args={[config.graph.colors.background]} />
+                <fog attach="fog" args={[config.graph.colors.background, 400, 1600]} />
 
                 {/* Controls - Restricted to keep user inside the infinite cloud */}
                 <OrbitControls
+                    ref={controlsRef}
                     enablePan={config.controls.enablePan}
                     enableZoom={config.controls.enableZoom}
                     enableRotate={config.controls.enableRotate}
@@ -48,9 +104,11 @@ export const GraphScene: React.FC<GraphSceneProps> = ({ data, onNodeSelect, sele
                             onNodeSelect={onNodeSelect}
                             selectedNodeId={selectedNodeId}
                         />
+                        {/* 3D Content Injection */}
+                        {children}
                     </group>
                 </Suspense>
             </Canvas>
         </div>
     );
-};
+});

@@ -81,54 +81,82 @@ export default function Page() {
 }
 ```
 
-## Configuration
+### Spatial API (Background Mode)
 
-You can customize the graph behavior by importing and modifying the default config:
+You can turn the graph into an interactive spatial background by injecting your own 3D content and controlling the camera programmatically.
 
 ```tsx
-import { defaultConfig } from 'NetUniverse-explorer';
+import { useRef } from 'react';
+import { GraphScene, GraphRef } from 'netuniverse';
 
-// Modify settings
-const myConfig = {
-  ...defaultConfig,
-  graph: {
-    ...defaultConfig.graph,
-    network_node_count: 5000,
-    connection_distance: 400,
-  },
-  controls: {
-    ...defaultConfig.controls,
-    enablePan: true,
-    enableZoom: true,
-  }
-};
+function MySpatialPage() {
+  const graphRef = useRef<GraphRef>(null);
+
+  const handleScrollToFeature = () => {
+    // Fly to coordinates [x, y, z] to show a specific 3D feature
+    graphRef.current?.flyTo([50, 50, 50], 2);
+  };
+
+  return (
+    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+      {/* 1. Spatial Background */}
+      <GraphScene ref={graphRef} data={data}>
+        {/* 2. Inject Custom 3D Content */}
+        <mesh position={[50, 50, 50]}>
+          <boxGeometry args={[10, 10, 10]} />
+          <meshStandardMaterial color="orange" wireframe />
+        </mesh>
+      </GraphScene>
+
+      {/* 3. HTML Overlay */}
+      <div style={{ position: 'absolute', zIndex: 10 }}>
+        <button onClick={handleScrollToFeature}>Go to Feature</button>
+      </div>
+    </div>
+  );
+}
 ```
 
-### Key Configuration Options
+### GraphRef API
 
-- **Graph**: Node count, spread, connection distance, colors
-- **Animation**: Bounce physics, camera transitions, highlight scaling
-- **Controls**: Zoom/Pan/Rotate toggles, axis locking
-
-## API
-
-### GraphScene Props
+The `ref` passed to `GraphScene` exposes the following methods for programmatic control:
 
 ```typescript
-interface GraphSceneProps {
-  data: GraphData;                    // Graph data (nodes & links)
-  onNodeSelect: (node: NodeData | null) => void;  // Node selection callback
-  selectedNodeId: string | null;      // Currently selected node ID
+interface GraphRef {
+  /** The underlying Three.js camera instance */
+  camera: THREE.PerspectiveCamera;
+  
+  /**
+   * Smoothly fly the camera to a specific 3D position.
+   * @param position [x, y, z] coordinates
+   * @param duration Animation duration in seconds (default: 1.5)
+   */
+  flyTo: (position: [number, number, number], duration?: number) => void;
+
+  /**
+   * Smoothly rotate the camera to look at a specific target point.
+   * @param target [x, y, z] coordinates to look at
+   * @param duration Animation duration in seconds (default: 1.5)
+   */
+  lookAt: (target: [number, number, number], duration?: number) => void;
 }
 ```
 
 ### Types
 
 ```typescript
+export enum ClusterId {
+  Core = 'CORE',
+  Finance = 'FINANCE',
+  Social = 'SOCIAL',
+  Infrastructure = 'INFRA',
+  Network = 'NETWORK'
+}
+
 interface NodeData {
   id: string;
   label: string;
-  cluster: string;
+  cluster: ClusterId | string;
   x?: number;
   y?: number;
   z?: number;
@@ -146,6 +174,68 @@ interface GraphData {
   nodes: NodeData[];
   links: LinkData[];
 }
+```
+
+## Advanced Usage
+
+### Injecting 3D Content (Spatial Background)
+
+`GraphScene` acts as a 3D container. specific 3D objects can be injected directly as children, allowing you to mix the graph visualization with other Three.js elements.
+
+```tsx
+<GraphScene data={data}>
+  <mesh position={[50, 50, 50]}>
+    <boxGeometry args={[10, 10, 10]} />
+    <meshStandardMaterial color="orange" wireframe />
+  </mesh>
+</GraphScene>
+```
+
+### Custom Physics Hook
+
+If you need access to the underlying d3-force simulation, you can use the exported `useGraphPhysics` hook, though standard usage handles this automatically within `GalaxyGraph`.
+
+```tsx
+import { useGraphPhysics } from 'netuniverse';
+
+// Inside a component within the <Canvas> context
+useGraphPhysics({ nodes, links });
+```
+
+## Configuration
+
+You can customize the graph behavior by importing and modifying the default config.
+
+### Full Options Reference
+
+| Section | Key | Type | Default | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **Graph** | `network_node_count` | Int | `4000` | Number of background star particles. |
+| | `network_spread` | Int | `1500` | Spatial spread of the background cloud. |
+| | `connection_distance` | Int | `300` | Max distance for background lines. |
+| | `grab_distance` | Int | `300` | Radius for mouse interaction grab effect. |
+| **Colors** | `background` | Hex | `#FFFBF4` | Scene background & fog color. |
+| | `network_node` | Hex | `#BDC3C7` | Color of background nodes. |
+| | `click_active` | Hex | `#E47600` | Flash color on interaction. |
+| **Controls** | `enableZoom` | Bool | `true` | Allow zooming. |
+| | `enableRotate` | Bool | `true` | Allow rotation. |
+| | `maxPolarAngle` | Float | `3.14159` | Vertical rotation limit. |
+| **Animation** | `bounce.enabled` | Bool | `true` | Enable boundary bounce effect. |
+| | `highlight.scale_hover` | Float | `1.5` | Scale factor on hover. |
+
+```tsx
+import { defaultConfig } from 'netuniverse';
+
+const myConfig = {
+  ...defaultConfig,
+  graph: {
+    ...defaultConfig.graph,
+    colors: {
+        ...defaultConfig.graph.colors,
+        background: '#0f172a',
+    }
+  }
+};
 ```
 
 ## Development
