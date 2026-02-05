@@ -2,7 +2,7 @@
   "graph": {
     "network_node_count": 4000,
     "network_spread": 1500,
-    "connection_distance": 300,
+    "connection_distance": 250,
     "grab_distance": 300,
     "camera_max_distance": 1200,
     "initial_camera_position": [
@@ -17,6 +17,10 @@
       "network_line": "#BDC3C7",
       "click_active": "#E47600",
       "background": "#FFFBF4"
+    },
+    "node_geometry": {
+      "shape": "circle",
+      "polygon_sides": 6
     }
   },
   "animation": {

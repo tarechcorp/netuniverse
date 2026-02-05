@@ -14,6 +14,20 @@ interface GalaxyGraphProps {
   selectedNodeId: string | null;
 }
 
+// Helper to generate polygon clip-path
+const calculatePolygonClipPath = (sides: number) => {
+  if (sides < 3) return 'none'; // Fallback
+  const points = [];
+  for (let i = 0; i < sides; i++) {
+    // Start from top (-PI/2)
+    const angle = (Math.PI * 2 * i) / sides - Math.PI / 2;
+    const x = 50 + 50 * Math.cos(angle);
+    const y = 50 + 50 * Math.sin(angle);
+    points.push(`${x.toFixed(1)}% ${y.toFixed(1)}%`);
+  }
+  return `polygon(${points.join(', ')})`;
+};
+
 export const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data, onNodeSelect, selectedNodeId }) => {
   const { nodes, links } = data;
   const { camera, controls, mouse, raycaster } = useThree() as any;
@@ -361,11 +375,20 @@ const GraphNode: React.FC<{
           }}
         >
           <div
-            className="w-full h-full rounded-full transition-all"
+            className="w-full h-full transition-all"
             style={{
               transitionDuration: `${config.animation.highlight.transition_duration}s`,
               backgroundColor: color,
-              boxShadow: hovered || selected ? `0 0 0 4px rgba(0,0,0,0.1), 0 0 10px ${color}` : 'none'
+              borderRadius: config.graph.node_geometry?.shape === 'circle' ? '50%' : '0%',
+              clipPath: config.graph.node_geometry?.shape === 'polygon'
+                ? calculatePolygonClipPath(config.graph.node_geometry.polygon_sides || 6)
+                : 'none',
+              boxShadow: (hovered || selected) && config.graph.node_geometry?.shape === 'circle'
+                ? `0 0 0 4px rgba(0,0,0,0.1), 0 0 10px ${color}`
+                : 'none',
+              filter: (hovered || selected) && config.graph.node_geometry?.shape === 'polygon'
+                ? `drop-shadow(0 0 4px ${color})`
+                : 'none'
             }}
           />
           <div
