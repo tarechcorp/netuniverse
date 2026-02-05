@@ -37,10 +37,11 @@ npm install react react-dom three
 ### Basic Example
 
 ```tsx
-import { GraphScene } from 'netuniverse';
+import { GraphScene, generateGraphData } from 'netuniverse';
 import type { GraphData } from 'netuniverse';
 
-const data: GraphData = {
+// Option 1: Use your own data
+const myData: GraphData = {
   nodes: [
     { id: '1', label: 'Node 1', cluster: 'CORE', x: 0, y: 0, z: 0 },
     { id: '2', label: 'Node 2', cluster: 'FINANCE', x: 100, y: 0, z: 0 },
@@ -50,13 +51,17 @@ const data: GraphData = {
   ]
 };
 
+// Option 2: Prototype with default random data
+const defaultData = generateGraphData();
+
 function App() {
   const [selectedNode, setSelectedNode] = useState(null);
 
+  // Use myData or defaultData
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <GraphScene
-        data={data}
+        data={defaultData}
         onNodeSelect={setSelectedNode}
         selectedNodeId={selectedNode?.id || null}
       />

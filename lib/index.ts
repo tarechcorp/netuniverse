@@ -9,3 +9,4 @@ export { ClusterId } from '../types';
 
 // Re-export config for consumers who want to use it
 export { default as defaultConfig } from '../data/config.json';
+export { generateGraphData } from '../data/generator';
