@@ -1,4 +1,4 @@
-# NebulaGraph Explorer
+# NetUniverse Explorer
 
 A beautiful 3D graph visualization library for React built with Three.js and React Three Fiber.
 
@@ -19,9 +19,9 @@ A beautiful 3D graph visualization library for React built with Three.js and Rea
 ## Installation
 
 ```bash
-npm install nebulagraph-explorer
+npm install netuniverse
 # or
-yarn add nebulagraph-explorer
+yarn add netuniverse
 ```
 
 ### Peer Dependencies
@@ -37,8 +37,8 @@ npm install react react-dom three
 ### Basic Example
 
 ```tsx
-import { GraphScene } from 'nebulagraph-explorer';
-import type { GraphData } from 'nebulagraph-explorer';
+import { GraphScene } from 'netuniverse';
+import type { GraphData } from 'netuniverse';
 
 const data: GraphData = {
   nodes: [
@@ -72,7 +72,7 @@ function App() {
 import dynamic from 'next/dynamic';
 
 const GraphScene = dynamic(
-  () => import('nebulagraph-explorer').then(mod => ({ default: mod.GraphScene })),
+  () => import('NetUniverse-explorer').then(mod => ({ default: mod.GraphScene })),
   { ssr: false }
 );
 
@@ -86,7 +86,7 @@ export default function Page() {
 You can customize the graph behavior by importing and modifying the default config:
 
 ```tsx
-import { defaultConfig } from 'nebulagraph-explorer';
+import { defaultConfig } from 'NetUniverse-explorer';
 
 // Modify settings
 const myConfig = {
