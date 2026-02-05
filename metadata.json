@@ -1,0 +1,4 @@
+{
+  "name": "NebulaGraph Explorer",
+  "description": "A high-performance 3D cluster-based force-directed graph visualization using React Three Fiber and D3 physics. Features deep-space aesthetics, glassmorphic UI, and smooth camera transitions."
+}

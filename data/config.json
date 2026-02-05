@@ -1,0 +1,47 @@
+{
+  "graph": {
+    "network_node_count": 4000,
+    "network_spread": 1500,
+    "connection_distance": 300,
+    "grab_distance": 300,
+    "camera_max_distance": 1200,
+    "initial_camera_position": [
+      400,
+      0,
+      400
+    ],
+    "detail_view_distance": 60,
+    "colors": {
+      "grab_line": "#012056",
+      "network_node": "#BDC3C7",
+      "network_line": "#BDC3C7",
+      "click_active": "#E47600"
+    }
+  },
+  "animation": {
+    "bounce": {
+      "enabled": true,
+      "boundary_radius": 4000,
+      "rebound_factor": -0.01,
+      "dampening": 0.99
+    },
+    "click": {
+      "camera_duration": 1.5,
+      "camera_ease": "power3.inOut"
+    },
+    "highlight": {
+      "scale_hover": 1.5,
+      "scale_selected": 1.5,
+      "transition_duration": 0.3
+    }
+  },
+  "controls": {
+    "enableZoom": false,
+    "enablePan": false,
+    "enableRotate": true,
+    "minPolarAngle": 0,
+    "maxPolarAngle": 3.14159,
+    "minAzimuthAngle": "Infinity",
+    "maxAzimuthAngle": "Infinity"
+  }
+}
