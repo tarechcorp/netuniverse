@@ -23,7 +23,7 @@
         "./*"
       ]
     },
-    "allowImportingTsExtensions": true,
-    "noEmit": true
+    "declaration": true,
+    "declarationMap": true
   }
 }
