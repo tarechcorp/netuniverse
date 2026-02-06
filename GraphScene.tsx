@@ -1,19 +1,41 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { GalaxyGraph } from './components/GalaxyGraph';
-import { GraphData, NodeData, GraphRef } from './types';
+import { GraphData, NodeData, GraphRef, GraphConfig } from './types';
 import { INITIAL_CAMERA_POSITION } from './constants';
-import config from './data/config.json';
+import defaultConfig from './data/config.json';
 
+
+// Simple deep merge helper
+const isObject = (item: any) => (item && typeof item === 'object' && !Array.isArray(item));
+
+const deepMerge = (target: any, source: any): any => {
+    const output = Object.assign({}, target);
+    if (isObject(target) && isObject(source)) {
+        Object.keys(source).forEach(key => {
+            if (isObject(source[key])) {
+                if (!(key in target)) {
+                    Object.assign(output, { [key]: source[key] });
+                } else {
+                    output[key] = deepMerge(target[key], source[key]);
+                }
+            } else {
+                Object.assign(output, { [key]: source[key] });
+            }
+        });
+    }
+    return output;
+};
 
 
 export interface GraphSceneProps {
     data: GraphData;
     onNodeSelect?: (node: NodeData | null) => void;
     selectedNodeId?: string | null;
+    config?: Partial<GraphConfig>;
     children?: React.ReactNode;
     className?: string;
     style?: React.CSSProperties;
@@ -23,12 +45,18 @@ export const GraphScene = React.forwardRef<GraphRef, GraphSceneProps>(({
     data,
     onNodeSelect = () => { },
     selectedNodeId = null,
+    config = {},
     children,
     className,
     style
 }, ref) => {
     const controlsRef = React.useRef<any>(null);
     const cameraRef = React.useRef<THREE.PerspectiveCamera>(null);
+
+    // Merge passed config with default config
+    const mergedConfig = useMemo(() => {
+        return deepMerge(defaultConfig, config) as GraphConfig;
+    }, [config]);
 
     React.useImperativeHandle(ref, () => ({
         camera: cameraRef.current!,
@@ -72,21 +100,21 @@ export const GraphScene = React.forwardRef<GraphRef, GraphSceneProps>(({
                     far={2000}
                 />
 
-                <color attach="background" args={[config.graph.colors.background]} />
-                <fog attach="fog" args={[config.graph.colors.background, 400, 1600]} />
+                <color attach="background" args={[mergedConfig.graph.colors.background]} />
+                <fog attach="fog" args={[mergedConfig.graph.colors.background, 400, 1600]} />
 
                 {/* Controls - Restricted to keep user inside the infinite cloud */}
                 <OrbitControls
                     ref={controlsRef}
-                    enablePan={config.controls.enablePan}
-                    enableZoom={config.controls.enableZoom}
-                    enableRotate={config.controls.enableRotate}
-                    maxDistance={config.graph.camera_max_distance}
-                    minDistance={config.graph.detail_view_distance}
-                    minPolarAngle={config.controls.minPolarAngle}
-                    maxPolarAngle={config.controls.maxPolarAngle}
-                    minAzimuthAngle={config.controls.minAzimuthAngle === "Infinity" ? -Infinity : Number(config.controls.minAzimuthAngle)}
-                    maxAzimuthAngle={config.controls.maxAzimuthAngle === "Infinity" ? Infinity : Number(config.controls.maxAzimuthAngle)}
+                    enablePan={mergedConfig.controls.enablePan}
+                    enableZoom={mergedConfig.controls.enableZoom}
+                    enableRotate={mergedConfig.controls.enableRotate}
+                    maxDistance={mergedConfig.graph.camera_max_distance}
+                    minDistance={mergedConfig.graph.detail_view_distance}
+                    minPolarAngle={mergedConfig.controls.minPolarAngle}
+                    maxPolarAngle={mergedConfig.controls.maxPolarAngle}
+                    minAzimuthAngle={mergedConfig.controls.minAzimuthAngle === "Infinity" ? -Infinity : Number(mergedConfig.controls.minAzimuthAngle)}
+                    maxAzimuthAngle={mergedConfig.controls.maxAzimuthAngle === "Infinity" ? Infinity : Number(mergedConfig.controls.maxAzimuthAngle)}
                     zoomSpeed={0.6}
                     panSpeed={0.5}
                     rotateSpeed={0.5}
@@ -103,6 +131,7 @@ export const GraphScene = React.forwardRef<GraphRef, GraphSceneProps>(({
                             data={data}
                             onNodeSelect={onNodeSelect}
                             selectedNodeId={selectedNodeId}
+                            config={mergedConfig}
                         />
                         {/* 3D Content Injection */}
                         {children}

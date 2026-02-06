@@ -54,3 +54,52 @@ export interface LineCoords {
   end: THREE.Vector3;
   opacity: number;
 }
+
+export interface GraphConfig {
+  graph: {
+    network_node_count: number;
+    network_spread: number;
+    connection_distance: number;
+    grab_distance: number;
+    camera_max_distance: number;
+    initial_camera_position: [number, number, number];
+    detail_view_distance: number;
+    colors: {
+      grab_line: string;
+      network_node: string;
+      network_line: string;
+      click_active: string;
+      background: string;
+    };
+    node_geometry?: {
+      shape: 'circle' | 'polygon';
+      polygon_sides?: number;
+    };
+  };
+  animation: {
+    bounce: {
+      enabled: boolean;
+      boundary_radius: number;
+      rebound_factor: number;
+      dampening: number;
+    };
+    click: {
+      camera_duration: number;
+      camera_ease: string;
+    };
+    highlight: {
+      scale_hover: number;
+      scale_selected: number;
+      transition_duration: number;
+    };
+  };
+  controls: {
+    enableZoom: boolean;
+    enablePan: boolean;
+    enableRotate: boolean;
+    minPolarAngle: number;
+    maxPolarAngle: number;
+    minAzimuthAngle: number | string;
+    maxAzimuthAngle: number | string;
+  };
+}

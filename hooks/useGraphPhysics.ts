@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import * as d3 from 'd3-force-3d';
-import { GraphData, NodeData, ClusterId } from '../types';
+import { GraphData, NodeData, ClusterId, GraphConfig } from '../types';
 import { CLUSTERS } from '../constants';
 
 // Define a custom interface for the d3-force-3d module since types might be loose
@@ -8,11 +8,12 @@ interface Simulation extends d3.Simulation<NodeData, any> {
   numDimensions(n: number): this;
   force(name: string, force?: any): this;
   velocityDecay(decay: number): this;
+  stop(): this;
 }
 
-export const useGraphPhysics = (data: GraphData) => {
+export const useGraphPhysics = (data: GraphData, config?: GraphConfig) => {
   const { nodes, links } = data;
-  
+
   // We keep the simulation in a ref so we can stop it on unmount
   const simulationRef = useRef<Simulation | null>(null);
 

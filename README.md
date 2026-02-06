@@ -2,7 +2,7 @@
 
 A beautiful 3D graph visualization library for React built with Three.js and React Three Fiber.
 
-![Network Universe](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Network Universe](https://img.shields.io/badge/version-1.3.0-blue.svg)
 
 ## Features
 
@@ -228,19 +228,25 @@ You can customize the graph behavior by importing and modifying the default conf
 | **Animation** | `bounce.enabled` | Bool | `true` | Enable boundary bounce effect. |
 | | `highlight.scale_hover` | Float | `1.5` | Scale factor on hover. |
 
-```tsx
-import { defaultConfig } from 'netuniverse';
+```
 
-const myConfig = {
-  ...defaultConfig,
+### Overriding Config via Props (New in v1.3.0)
+
+You can override any specific configuration value by passing a `config` prop to `GraphScene`. This will be merged with the default configuration.
+
+```tsx
+const customConfig = {
   graph: {
-    ...defaultConfig.graph,
     colors: {
-        ...defaultConfig.graph.colors,
-        background: '#0f172a',
+      background: '#000000', // Override background color
     }
+  },
+  controls: {
+    enableZoom: false // Disable zoom
   }
 };
+
+<GraphScene data={data} config={customConfig} />
 ```
 
 ## Development

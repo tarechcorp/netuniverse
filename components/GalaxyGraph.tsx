@@ -3,15 +3,15 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import gsap from 'gsap';
-import { GraphData, NodeData } from '../types';
+import { GraphData, NodeData, GraphConfig } from '../types';
 import { CLUSTERS, DETAIL_VIEW_DISTANCE } from '../constants';
 import { useGraphPhysics } from '../hooks/useGraphPhysics';
-import config from '../data/config.json';
 
 interface GalaxyGraphProps {
   data: GraphData;
   onNodeSelect: (node: NodeData | null) => void;
   selectedNodeId: string | null;
+  config: GraphConfig;
 }
 
 // Helper to generate polygon clip-path
@@ -28,7 +28,7 @@ const calculatePolygonClipPath = (sides: number) => {
   return `polygon(${points.join(', ')})`;
 };
 
-export const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data, onNodeSelect, selectedNodeId }) => {
+export const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data, onNodeSelect, selectedNodeId, config }) => {
   const { nodes, links } = data;
   const { camera, controls, mouse, raycaster } = useThree() as any;
 
@@ -66,7 +66,7 @@ export const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data, onNodeSelect, se
       const tId = typeof l.target === 'object' ? (l.target as any).id : l.target;
       return mainNodes.find(n => n.id === sId) && mainNodes.find(n => n.id === tId);
     })
-  });
+  }, config);
 
   // --- Particles ---
   const count = networkNodes.length;
@@ -321,6 +321,7 @@ export const GalaxyGraph: React.FC<GalaxyGraphProps> = ({ data, onNodeSelect, se
           dimmed={hoveredNodeId !== null && hoveredNodeId !== node.id && !node.connections.includes(hoveredNodeId)}
           onClick={() => handleNodeClick(node)}
           onHover={(isHovering) => setHoveredNodeId(isHovering ? node.id : null)}
+          config={config}
         />
       ))}
     </>
@@ -334,7 +335,8 @@ const GraphNode: React.FC<{
   dimmed: boolean;
   onClick: () => void;
   onHover: (h: boolean) => void;
-}> = ({ node, selected, hovered, dimmed, onClick, onHover }) => {
+  config: GraphConfig;
+}> = ({ node, selected, hovered, dimmed, onClick, onHover, config }) => {
   const ref = useRef<THREE.Group>(null);
   const clusterConfig = CLUSTERS[node.cluster];
   const color = clusterConfig ? clusterConfig.color : '#6e6e6e';
