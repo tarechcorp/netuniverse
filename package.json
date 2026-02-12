@@ -49,7 +49,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SamoraMachel/netuniverse.git"
+    "url": "git+https://github.com/tarechcorp/netuniverse.git"
   },
   "keywords": [
     "3D",
@@ -58,7 +58,7 @@
   "author": "Samora Machel",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/SamoraMachel/netuniverse/issues"
+    "url": "https://github.com/tarechcorp/netuniverse/issues"
   },
-  "homepage": "https://github.com/SamoraMachel/netuniverse#readme"
+  "homepage": "https://github.com/tarechcorp/netuniverse#readme"
 }
